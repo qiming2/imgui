@@ -659,9 +659,14 @@ static void ImGui_ImplSDL3_UpdateMouseData()
                 SDL_WarpMouseInWindow(bd->Window, io.MousePos.x, io.MousePos.y);
         }
 
-        // (Optional) Fallback to provide mouse position when focused (SDL_EVENT_MOUSE_MOTION already provides this when hovered or captured)
+        bool workaround_for_notch = false;
+ #if defined(__APPLE__)
+         workaround_for_notch = (SDL_GetWindowFlags(bd->Window) & SDL_WINDOW_FULLSCREEN) != 0;
+ #endif
+ 
+         // (Optional) Fallback to provide mouse position when focused (SDL_MOUSEMOTION already provides this when hovered or captured)
         const bool is_relative_mouse_mode = SDL_GetWindowRelativeMouseMode(bd->Window);
-        if (bd->MouseCanUseGlobalState && bd->MouseButtonsDown == 0 && !is_relative_mouse_mode)
+        if (!workaround_for_notch && bd->MouseCanUseGlobalState && bd->MouseButtonsDown == 0 && !is_relative_mouse_mode)
         {
             // Single-viewport mode: mouse position in client window coordinates (io.MousePos is (0,0) when the mouse is on the upper-left corner of the app window)
             // Multi-viewport mode: mouse position in OS absolute coordinates (io.MousePos is (0,0) when the mouse is on the upper-left of the primary monitor)
