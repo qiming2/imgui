@@ -848,20 +848,14 @@ static void ImGui_ImplSDL3_UpdateMonitors()
         monitor.MainPos = monitor.WorkPos = ImVec2((float)r.x, (float)r.y);
         monitor.MainSize = monitor.WorkSize = ImVec2((float)r.w, (float)r.h);
         
-        // FATAL(Qiming): Temp fix for unbounded memory growth on mac
-#if GZ_PLATFORM_APPLE
-//        if (SDL_GetDisplayUsableBounds(display_id, &r) && r.w > 0 && r.h > 0)
-//        {
-//            monitor.WorkPos = ImVec2((float)r.x, (float)r.y);
-//            monitor.WorkSize = ImVec2((float)r.w, (float)r.h);
-//        }
-#else
+        // FATAL(Qiming): It is fixed now
+
         if (SDL_GetDisplayUsableBounds(display_id, &r) && r.w > 0 && r.h > 0)
         {
             monitor.WorkPos = ImVec2((float)r.x, (float)r.y);
             monitor.WorkSize = ImVec2((float)r.w, (float)r.h);
         }
-#endif
+
         // FIXME-VIEWPORT: On MacOS SDL reports actual monitor DPI scale, ignoring OS configuration. We may want to set
         //  DpiScale to cocoa_window.backingScaleFactor here.
         monitor.DpiScale = SDL_GetDisplayContentScale(display_id);
